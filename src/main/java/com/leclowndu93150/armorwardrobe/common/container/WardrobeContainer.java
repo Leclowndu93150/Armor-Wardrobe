@@ -74,7 +74,7 @@ public class WardrobeContainer extends AbstractContainerMenu {
         }
 
         int playerInvX = 8;
-        int playerInvY = 104;
+        int playerInvY = 118; // Moved down to avoid overlap
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 9; col++) {
                 this.addSlot(new Slot(playerInventory, col + row * 9 + 9,
@@ -84,7 +84,7 @@ public class WardrobeContainer extends AbstractContainerMenu {
             }
         }
 
-        int hotbarY = 162;
+        int hotbarY = 176; // Also move hotbar down
         for (int col = 0; col < 9; col++) {
             this.addSlot(new Slot(playerInventory, col,
                     playerInvX + col * 18,
@@ -97,7 +97,7 @@ public class WardrobeContainer extends AbstractContainerMenu {
         this(windowId, playerInventory, findPlayerWardrobeItem(playerInventory.player));
     }
 
-    private static ItemStack findPlayerWardrobeItem(Player player) {
+    public static ItemStack findPlayerWardrobeItem(Player player) {
         // Search main inventory first
         for (int i = 0; i < player.getInventory().getContainerSize(); ++i) {
             ItemStack itemstack = player.getInventory().getItem(i);
@@ -221,7 +221,6 @@ public class WardrobeContainer extends AbstractContainerMenu {
     public void removed(Player player) {
         super.removed(player);
         // Saving is now handled by onContentsChanged in the ItemStackHandler
-        // and potentially within cycleArmor if called server-side directly.
     }
 
     public void cycleArmor(int setIndex) {
@@ -248,9 +247,10 @@ public class WardrobeContainer extends AbstractContainerMenu {
             }
         }
 
-        // No need to explicitly save NBT here, as setStackInSlot calls onContentsChanged, which calls saveToNBT
-        // However, ensure the player's inventory changes are also synced (usually happens automatically)
-        player.inventoryMenu.broadcastChanges(); // Force sync player inventory changes
+        // Force sync of inventory to all clients
+        player.inventoryMenu.broadcastChanges();
+        player.containerMenu.broadcastChanges();
+        player.getInventory().setChanged();
     }
 
     private EquipmentSlot getEquipmentSlotForIndex(int index) {
@@ -308,5 +308,4 @@ public class WardrobeContainer extends AbstractContainerMenu {
             }
         }
     }
-
 }

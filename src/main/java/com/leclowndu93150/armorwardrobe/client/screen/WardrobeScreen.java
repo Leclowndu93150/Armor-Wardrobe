@@ -15,23 +15,23 @@ import net.minecraft.world.entity.player.Inventory;
 public class WardrobeScreen extends AbstractContainerScreen<WardrobeContainer> {
     private static final ResourceLocation TEXTURE = new ResourceLocation(ArmorWardrobe.MOD_ID, "textures/gui/wardrobe.png");
 
-    private int imageWidth = 196;
-    private int imageHeight = 186;
-
     public WardrobeScreen(WardrobeContainer container, Inventory playerInventory, Component title) {
         super(container, playerInventory, title);
         this.imageWidth = 196;
-        this.imageHeight = 186;
-        this.inventoryLabelY = this.imageHeight - 94; // Adjust if needed based on texture layout
+        this.imageHeight = 200; // Increase height to avoid overlap with player inventory
+        this.inventoryLabelY = this.imageHeight - 94;
     }
 
     @Override
     protected void init() {
         super.init();
+        // Calculate better positions for labels
         this.titleLabelX = (this.imageWidth - this.font.width(this.title)) / 2;
-        // Player Inventory Label - Position based on standard layout adjusted for custom height
+        this.titleLabelY = 6; // Move title higher
+
+        // Player Inventory Label - Position based on standard layout
         this.inventoryLabelX = 8;
-        this.inventoryLabelY = this.imageHeight - 96 + 2; // Standard offset from bottom
+        this.inventoryLabelY = this.imageHeight - 96; // Better position for inv label
     }
 
     @Override
@@ -42,7 +42,13 @@ public class WardrobeScreen extends AbstractContainerScreen<WardrobeContainer> {
 
         int x = (this.width - this.imageWidth) / 2;
         int y = (this.height - this.imageHeight) / 2;
-        guiGraphics.blit(TEXTURE, x, y, 0, 0, this.imageWidth, this.imageHeight);
+
+        // Draw the background with appropriate sizing
+        // Draw the upper part of the GUI
+        guiGraphics.blit(TEXTURE, x, y, 0, 0, this.imageWidth, 96);
+
+        // Draw the player inventory part (moved down to avoid overlap)
+        guiGraphics.blit(TEXTURE, x, y + 96, 0, 96, this.imageWidth, this.imageHeight - 96);
 
         int setSpacing = 64;
         int startX = 18;
@@ -61,7 +67,7 @@ public class WardrobeScreen extends AbstractContainerScreen<WardrobeContainer> {
 
             // Draw button visual representation below the set
             int buttonX = setX - 1; // Align slightly left of slots
-            int buttonY = y + 96; // Position below armor slots
+            int buttonY = y + 94; // Position button right above player inventory
             int buttonWidth = 50;
             int buttonHeight = 16; // Slightly smaller button
 
@@ -97,8 +103,6 @@ public class WardrobeScreen extends AbstractContainerScreen<WardrobeContainer> {
         guiGraphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, 0x404040, false);
         // Render player inventory label using calculated position
         guiGraphics.drawString(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, 0x404040, false);
-
-        // Custom set labels are drawn in renderBg
     }
 
     @Override
@@ -115,7 +119,7 @@ public class WardrobeScreen extends AbstractContainerScreen<WardrobeContainer> {
 
                 // Use the *exact same coordinates and dimensions* as drawing
                 int buttonX = setX - 1;
-                int buttonY = y + 96;
+                int buttonY = y + 94; // Same as in renderBg
                 int buttonWidth = 50;
                 int buttonHeight = 16;
 
