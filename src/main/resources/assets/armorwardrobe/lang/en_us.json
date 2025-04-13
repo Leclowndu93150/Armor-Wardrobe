@@ -1,0 +1,12 @@
+{
+  "item.armorwardrobe.wardrobe": "Armor Wardrobe",
+  "container.armorwardrobe.wardrobe": "Armor Wardrobe",
+  "gui.armorwardrobe.set1": "Set 1",
+  "gui.armorwardrobe.set2": "Set 2",
+  "gui.armorwardrobe.set3": "Set 3",
+  "gui.armorwardrobe.swap": "Swap",
+  "key.category.armorwardrobe": "Armor Wardrobe",
+  "key.armorwardrobe.cycle_set1": "Cycle Armor Set 1",
+  "key.armorwardrobe.cycle_set2": "Cycle Armor Set 2",
+  "key.armorwardrobe.cycle_set3": "Cycle Armor Set 3"
+}
