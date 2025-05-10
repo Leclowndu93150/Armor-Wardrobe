@@ -2,6 +2,7 @@ package com.leclowndu93150.armorwardrobe.common.networking;
 
 import com.leclowndu93150.armorwardrobe.ArmorWardrobe;
 import com.leclowndu93150.armorwardrobe.common.networking.packets.CycleArmorPacket;
+import com.leclowndu93150.armorwardrobe.common.networking.packets.OpenWardrobeGuiPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkRegistry;
@@ -26,6 +27,11 @@ public class PacketHandler {
                 CycleArmorPacket::encode,
                 CycleArmorPacket::decode,
                 CycleArmorPacket::handle);
+
+        INSTANCE.registerMessage(id++, OpenWardrobeGuiPacket.class,
+                OpenWardrobeGuiPacket::encode,
+                OpenWardrobeGuiPacket::decode,
+                OpenWardrobeGuiPacket::handle);
     }
 
     public static void sendToServer(Object msg) {

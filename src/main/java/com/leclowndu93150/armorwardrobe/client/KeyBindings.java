@@ -9,27 +9,11 @@ import org.lwjgl.glfw.GLFW;
 public class KeyBindings {
     public static final String KEY_CATEGORY = "key.category." + ArmorWardrobe.MOD_ID;
 
-    public static final KeyMapping CYCLE_ARMOR_1 = new KeyMapping(
-            "key." + ArmorWardrobe.MOD_ID + ".cycle_set1",
+    public static final KeyMapping OPEN_WARDROBE_GUI = new KeyMapping(
+            "key." + ArmorWardrobe.MOD_ID + ".open_wardrobe",
             KeyConflictContext.IN_GAME,
             InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_F5,
-            KEY_CATEGORY
-    );
-
-    public static final KeyMapping CYCLE_ARMOR_2 = new KeyMapping(
-            "key." + ArmorWardrobe.MOD_ID + ".cycle_set2",
-            KeyConflictContext.IN_GAME,
-            InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_F6,
-            KEY_CATEGORY
-    );
-
-    public static final KeyMapping CYCLE_ARMOR_3 = new KeyMapping(
-            "key." + ArmorWardrobe.MOD_ID + ".cycle_set3",
-            KeyConflictContext.IN_GAME,
-            InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_F7,
+            GLFW.GLFW_KEY_F5, // You can keep one of your existing keys
             KEY_CATEGORY
     );
 }

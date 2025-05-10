@@ -5,6 +5,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -132,7 +134,7 @@ public class WardrobeContainer extends AbstractContainerMenu {
     public boolean stillValid(Player player) {
         // Check if the player still has *a* wardrobe item, not necessarily the exact instance
         // (though usually it will be). This prevents GUI closing during swaps if the item reference changes slightly.
-        return !findPlayerWardrobeItem(player).isEmpty();
+        return player.isAlive();
     }
 
 
@@ -251,6 +253,11 @@ public class WardrobeContainer extends AbstractContainerMenu {
         player.inventoryMenu.broadcastChanges();
         player.containerMenu.broadcastChanges();
         player.getInventory().setChanged();
+        if (player instanceof ServerPlayer serverPlayer) {
+            serverPlayer.inventoryMenu.sendAllDataToRemote();
+            serverPlayer.connection.send(new ClientboundContainerSetSlotPacket(-1, -1,
+                    player.getInventory().selected, player.getInventory().getSelected()));
+        }
     }
 
     private EquipmentSlot getEquipmentSlotForIndex(int index) {

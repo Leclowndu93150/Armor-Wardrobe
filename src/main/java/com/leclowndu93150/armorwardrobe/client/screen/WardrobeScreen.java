@@ -14,24 +14,20 @@ import net.minecraft.world.entity.player.Inventory;
 
 public class WardrobeScreen extends AbstractContainerScreen<WardrobeContainer> {
     private static final ResourceLocation TEXTURE = new ResourceLocation(ArmorWardrobe.MOD_ID, "textures/gui/wardrobe.png");
+    private static final ResourceLocation BUTTON_TEXTURE = new ResourceLocation(ArmorWardrobe.MOD_ID, "textures/gui/swap_button.png");
 
     public WardrobeScreen(WardrobeContainer container, Inventory playerInventory, Component title) {
         super(container, playerInventory, title);
         this.imageWidth = 196;
-        this.imageHeight = 200; // Increase height to avoid overlap with player inventory
+        this.imageHeight = 200;
         this.inventoryLabelY = this.imageHeight - 94;
     }
 
     @Override
     protected void init() {
         super.init();
-        // Calculate better positions for labels
-        this.titleLabelX = (this.imageWidth - this.font.width(this.title)) / 2;
-        this.titleLabelY = 6; // Move title higher
-
-        // Player Inventory Label - Position based on standard layout
         this.inventoryLabelX = 8;
-        this.inventoryLabelY = this.imageHeight - 96; // Better position for inv label
+        this.inventoryLabelY = this.imageHeight - 96;
     }
 
     @Override
@@ -43,50 +39,34 @@ public class WardrobeScreen extends AbstractContainerScreen<WardrobeContainer> {
         int x = (this.width - this.imageWidth) / 2;
         int y = (this.height - this.imageHeight) / 2;
 
-        // Draw the background with appropriate sizing
-        // Draw the upper part of the GUI
+        // Draw the main GUI background
         guiGraphics.blit(TEXTURE, x, y, 0, 0, this.imageWidth, 96);
-
-        // Draw the player inventory part (moved down to avoid overlap)
         guiGraphics.blit(TEXTURE, x, y + 96, 0, 96, this.imageWidth, this.imageHeight - 96);
 
         int setSpacing = 64;
         int startX = 18;
 
+        // Draw button textures below each set
         for (int setIndex = 0; setIndex < 3; setIndex++) {
-            int setX = x + startX + setIndex * setSpacing;
-            int labelY = y + 6;
-            guiGraphics.drawString(
-                    this.font,
-                    Component.translatable("gui." + ArmorWardrobe.MOD_ID + ".set" + (setIndex + 1)),
-                    setX,
-                    labelY,
-                    0x404040,
-                    false
-            );
+            int slotX = x + startX + setIndex * setSpacing;
+            int buttonX = slotX - 16; // Center the 48px button with the slot (18px)
+            int buttonY = y + 94; // Position right after the boots slot
 
-            // Draw button visual representation below the set
-            int buttonX = setX - 1; // Align slightly left of slots
-            int buttonY = y + 94; // Position button right above player inventory
-            int buttonWidth = 50;
-            int buttonHeight = 16; // Slightly smaller button
+            boolean isHovering = mouseX >= buttonX && mouseX < buttonX + 48 &&
+                    mouseY >= buttonY && mouseY < buttonY + 16;
 
-            // Check if mouse is hovering
-            boolean isHovering = mouseX >= buttonX && mouseX < buttonX + buttonWidth &&
-                    mouseY >= buttonY && mouseY < buttonY + buttonHeight;
+            // Explicitly set the button texture before drawing it
+            RenderSystem.setShaderTexture(0, BUTTON_TEXTURE);
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
-            // Button background color changes on hover
-            int mainColor = isHovering ? 0xFFC0C0C0 : 0xFF8B8B8B; // Lighter when hovered
-            int frameColor = 0xFF373737;
+            // Draw the button from the texture atlas
+            // Using the correct UV coordinates for the texture
+            // Normal button is at y=0, hovered button is at y=16
+            int vOffset = isHovering ? 16 : 0;
 
-            guiGraphics.fill(buttonX, buttonY, buttonX + buttonWidth, buttonY + buttonHeight, frameColor); // Outer frame
-            guiGraphics.fill(buttonX + 1, buttonY + 1, buttonX + buttonWidth - 1, buttonY + buttonHeight - 1, mainColor); // Inner color
-
-            // Button text
-            Component buttonText = Component.translatable("gui." + ArmorWardrobe.MOD_ID + ".swap");
-            int textX = buttonX + (buttonWidth - this.font.width(buttonText)) / 2;
-            int textY = buttonY + (buttonHeight - 8) / 2; // Center text vertically
-            guiGraphics.drawString(this.font, buttonText, textX, textY, 0xFFFFFF, true); // White text with shadow
+            // Use the GuiGraphics blit method to draw from the texture
+            // Parameters: texture, x, y, u, v, width, height
+            guiGraphics.blit(BUTTON_TEXTURE, buttonX, buttonY, 0, vOffset, 48, 16);
         }
     }
 
@@ -99,9 +79,7 @@ public class WardrobeScreen extends AbstractContainerScreen<WardrobeContainer> {
 
     @Override
     protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        // Render title using the calculated position
-        guiGraphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, 0x404040, false);
-        // Render player inventory label using calculated position
+        // Only render the player inventory label
         guiGraphics.drawString(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, 0x404040, false);
     }
 
@@ -115,12 +93,10 @@ public class WardrobeScreen extends AbstractContainerScreen<WardrobeContainer> {
             int startX = 18;
 
             for (int setIndex = 0; setIndex < 3; setIndex++) {
-                int setX = x + startX + setIndex * setSpacing;
-
-                // Use the *exact same coordinates and dimensions* as drawing
-                int buttonX = setX - 1;
-                int buttonY = y + 94; // Same as in renderBg
-                int buttonWidth = 50;
+                int slotX = x + startX + setIndex * setSpacing;
+                int buttonX = slotX - 16; // Same as in renderBg
+                int buttonY = y + 94;
+                int buttonWidth = 48;
                 int buttonHeight = 16;
 
                 if (mouseX >= buttonX && mouseX < buttonX + buttonWidth &&

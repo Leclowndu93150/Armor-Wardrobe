@@ -4,7 +4,7 @@ import com.leclowndu93150.armorwardrobe.ArmorWardrobe;
 import com.leclowndu93150.armorwardrobe.client.screen.WardrobeScreen;
 import com.leclowndu93150.armorwardrobe.common.container.WardrobeContainer;
 import com.leclowndu93150.armorwardrobe.common.networking.PacketHandler;
-import com.leclowndu93150.armorwardrobe.common.networking.packets.CycleArmorPacket;
+import com.leclowndu93150.armorwardrobe.common.networking.packets.OpenWardrobeGuiPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.world.entity.player.Player;
@@ -35,9 +35,7 @@ public class ClientEvents {
     public static class ClientModEvents {
         @SubscribeEvent
         public static void onKeyRegister(RegisterKeyMappingsEvent event) {
-            event.register(KeyBindings.CYCLE_ARMOR_1);
-            event.register(KeyBindings.CYCLE_ARMOR_2);
-            event.register(KeyBindings.CYCLE_ARMOR_3);
+            event.register(KeyBindings.OPEN_WARDROBE_GUI);
         }
 
         @SubscribeEvent
@@ -48,11 +46,17 @@ public class ClientEvents {
 
     @SubscribeEvent
     public static void onKeyInput(InputEvent.Key event) {
+        // First check if our keybind was pressed, to avoid unnecessary processing
+        if (!KeyBindings.OPEN_WARDROBE_GUI.consumeClick()) {
+            return;
+        }
+
         Minecraft minecraft = Minecraft.getInstance();
         Player player = minecraft.player;
 
         if (player == null) return;
 
+        // Only check Curios if our keybind was actually pressed
         AtomicBoolean hasWardrobeInCurios = new AtomicBoolean(false);
 
         try {
@@ -70,13 +74,8 @@ public class ClientEvents {
         }
 
         if (hasWardrobeInCurios.get()) {
-            if (KeyBindings.CYCLE_ARMOR_1.consumeClick()) {
-                PacketHandler.sendToServer(new CycleArmorPacket(0));
-            } else if (KeyBindings.CYCLE_ARMOR_2.consumeClick()) {
-                PacketHandler.sendToServer(new CycleArmorPacket(1));
-            } else if (KeyBindings.CYCLE_ARMOR_3.consumeClick()) {
-                PacketHandler.sendToServer(new CycleArmorPacket(2));
-            }
+            // Send packet to open GUI
+            PacketHandler.sendToServer(new OpenWardrobeGuiPacket());
         }
     }
 }
